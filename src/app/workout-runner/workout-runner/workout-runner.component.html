@@ -1,0 +1,57 @@
+<div class="row" *ngIf="!workoutCompleted">
+  <div id="description-panel" class="col-sm-2">
+  <div *ngIf="currentExercise !== undefined; then showDiv else hideDiv"></div>
+  <ng-template #showDiv>
+      <exercise-description [description]="currentExercise.exercise.description" [steps]="currentExercise.exercise.procedure"></exercise-description>
+  </ng-template>
+  <ng-template #hideDiv>
+      <exercise-description></exercise-description>
+  </ng-template>
+  </div>
+  <div id="exercise-pane" class="col-sm-7">
+    <div id="pause-overlay" (click)="pauseResumeToggle()" (window:keyup)="onKeyPressed($event)">
+      <span class="glyphicon pause absolute-center" [ngClass]="{'glyphicon-pause' : !workoutPaused, 'glyphicon-play' : workoutPaused}"></span>
+    </div>
+    <div *ngIf="currentExercise" class="row workout-content">
+      <div class="workout-display-div">
+        <!--<h4>Workout Remaining - {{workoutTimeRemaining | secondsToTime}}</h4>-->
+        <h1>{{currentExercise.exercise.title}}</h1>
+        <img class="img-responsive" [src]="'/assets/images/' + currentExercise.exercise.image" />
+        <div class="progress time-progress">
+          <div class="progress-bar" role="progressbar"
+               [attr.aria-valuenow]="exerciseRunningDuration" aria-valuemin="0" [attr.aria-valuemax]="currentExercise.duration"
+               [ngStyle]="{'width':(exerciseRunningDuration/currentExercise.duration) * 100 + '%'}">
+          </div>
+        </div>
+        <div class="row">
+          <h3 class="col-sm-6 text-left">Time Remaining:
+            <strong>{{currentExercise.duration-exerciseRunningDuration}}</strong>
+          </h3>
+          <h3 class="col-sm-6 text-right" *ngIf="currentExercise.exercise.name=='rest'">Next up:
+            <strong>{{workout.exercises[currentExerciseIndex + 1].exercise.title}}</strong>
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="video-panel" class="col-sm-3">
+    <div *ngIf="currentExercise !== undefined; then showVideoDiv else hideVideoDiv"></div>
+
+    <ng-template #showVideoDiv>
+      <video-player [videos]="currentExercise.exercise.videos" (playbackStarted)="pause()" (playbackEnded)="resume()"></video-player>
+    </ng-template>
+    <ng-template #hideVideoDiv>
+      <video-player></video-player>
+    </ng-template>
+  </div>
+</div>
+
+<div class="row" *ngIf="workoutCompleted">
+  <div class="col-sm-12">
+    <h1 class="text-center">Workout Completed</h1>
+    <a [routerLink]="['/builder']">
+      <span>Go to Workouts</span>
+    </a>
+  </div>
+
+</div>
